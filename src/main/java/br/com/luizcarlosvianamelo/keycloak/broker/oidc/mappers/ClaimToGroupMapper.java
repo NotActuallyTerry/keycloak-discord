@@ -144,7 +144,7 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
         // useful to sync even if the user has no groups (remove roles the user had)
         if (newGroupsObj == null) {
             List<String> newList = new ArrayList<>();
-            newGroupsObj = newList
+            newGroupsObj = newList;
         }
 
         logger.debugf("Realm [%s], IdP [%s]: starting mapping groups for user [%s]",
