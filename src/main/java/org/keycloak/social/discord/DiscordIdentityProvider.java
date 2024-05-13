@@ -35,7 +35,6 @@ import org.keycloak.services.messages.Messages;
 
 import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -100,7 +99,7 @@ public class DiscordIdentityProvider extends AbstractOAuth2IdentityProvider<Disc
     @Override
     protected BrokeredIdentityContext doGetFederatedIdentity(String accessToken) {
         log.debug("doGetFederatedIdentity()");
-        JsonNode profile = null;
+        JsonNode profile;
         try {
             profile = SimpleHttp.doGet(PROFILE_URL, session).header("Authorization", "Bearer " + accessToken).asJson();
         } catch (Exception e) {
@@ -117,9 +116,12 @@ public class DiscordIdentityProvider extends AbstractOAuth2IdentityProvider<Disc
         if (getConfig().hasMappedRoles()) {
             Map<String, HashMap<String, String>> mappedRoles = getConfig().getMappedRolesAsMap();
             for (String guild : mappedRoles.keySet()) {
-                JsonNode guildMember = null;
+                JsonNode guildMember;
                 try {
                     guildMember = SimpleHttp.doGet(String.format(GUILD_MEMBER_URL, guild), session).header("Authorization", "Bearer " + accessToken).asJson();
+                    if (guildMember.has("joined_at") && mappedRoles.get(guild).containsKey(guild) ) {
+                        groups.add(mappedRoles.get(guild).get(guild));
+                    }
                     for (JsonNode role : guildMember.get("roles")) {
                         String roleString = role.textValue();
                         if (mappedRoles.get(guild).containsKey(roleString)) {
@@ -132,7 +134,7 @@ public class DiscordIdentityProvider extends AbstractOAuth2IdentityProvider<Disc
             }
         }
         if (profile instanceof ObjectNode) {
-            ((ObjectNode) profile).put("discord-groups", groups);
+            ((ObjectNode) profile).set("discord-groups", groups);
         }
 
         return extractIdentityFromProfile(null, profile);

@@ -31,7 +31,8 @@ To sync roles from Discord -> Keycloak, do the following:
 1. Under the `discord` Identity Provider, fill out `Discord Roles mapping` value with the roles you want synced:
   - The format is `Discord-Guild-ID:Discord-Role-ID:Group-Name`, like so: `613425648685547541:613426529623605268:discord-devs-moderators`
   - You can specify multiple roles by separating them with commas: `613425648685547541:613426529623605268:discord-devs-moderators,613425648685547541:936746847437983786:discord-devs-modmail`
-2. Set up a Mapper under the `discord` Identity Provider:
+  - If you want to add a role just because the user is on the server, you can use the everyone role ID, which is the same as the guild ID : `613425648685547541:613425648685547541:everyone`
+3. Set up a Mapper under the `discord` Identity Provider:
   - Set Mapper Type to `Claim to Group Mapper`
   - Set Claim to `discord-groups`
   - Tick Create Groups if not exists
