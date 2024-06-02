@@ -141,14 +141,10 @@ public class ClaimToGroupMapper extends AbstractClaimMapper {
 
         // get new groups
         Object newGroupsObj = getClaimValue(context, groupClaimName);
-        // don't modify groups membership if the claim was not found
+        // useful to sync even if the user has no groups (remove roles the user had)
         if (newGroupsObj == null) {
-            logger.debugf("Realm [%s], IdP [%s]: no group claim (claim name: [%s]) for user [%s], ignoring...",
-                    realm.getName(),
-                    mapperModel.getIdentityProviderAlias(),
-                    groupClaimName,
-                    user.getUsername());
-            return;
+            List<String> newList = new ArrayList<>();
+            newGroupsObj = newList;
         }
 
         logger.debugf("Realm [%s], IdP [%s]: starting mapping groups for user [%s]",
